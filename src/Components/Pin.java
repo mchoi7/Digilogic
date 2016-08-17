@@ -1,6 +1,8 @@
-public class Point {
+package src.Components;
+
+public class Pin {
     private final int x, y;
-    Point(int x, int y) {
+    public Pin(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -13,7 +15,7 @@ public class Point {
         return y;
     }
     public boolean equals (final Object o) {
-        return o instanceof Point && ((Point) o).x == x && ((Point) o).y == y;
+        return o instanceof Pin && ((Pin) o).x == x && ((Pin) o).y == y;
     }
 
     public int hashCode() {
