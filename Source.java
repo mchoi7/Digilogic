@@ -18,7 +18,11 @@ public class Source extends Component {
 
     void renderOut(Graphics2D g) {
         super.renderOut(g);
+        g.setPaint(logic == HIGH ? MainFrame.palette[6] : MainFrame.palette[5]);
         g.drawOval(UNIT*p.getX() + UNIT/4, UNIT*p.getY() + UNIT/4, UNIT/2, UNIT/2);
+    }
+    void renderWires(Graphics2D g) {
+        super.renderWires(g);
     }
 
 }

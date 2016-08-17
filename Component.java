@@ -2,18 +2,28 @@ import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Component {
+class Component {
     static int UNIT = 40;
     static final boolean LOW = false, HIGH = true;
-    Circuit circuit;
     List<Component> outputs = new ArrayList<>();
     Point p;
     boolean logic, active;
 
     Component(Circuit circuit, Point p) {
         circuit.getComponents().put(p, this);
-        this.circuit = circuit;
         this.p = p;
+    }
+
+    void connect(Component c) {
+        outputs.add(c);
+    }
+
+    void disconnect(Component c) {
+        outputs.remove(c);
+    }
+
+    void enable() {
+        active = HIGH;
     }
 
     void update() {
@@ -33,24 +43,14 @@ public class Component {
     void renderOut(Graphics2D g) {
         g.setPaint(MainFrame.palette[4]);
         g.drawRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT);
+    }
+    void renderWires(Graphics2D g) {
         g.setPaint(logic == HIGH ? MainFrame.palette[6] : MainFrame.palette[5]);
-        outputs.stream().filter(output -> output != null).forEach(output -> g.drawLine(
-                UNIT*p.getX() + UNIT/2, UNIT*p.getY() + UNIT/2,
-                UNIT*output.getPoint().getX() + UNIT/2,
-                UNIT*output.getPoint().getY() + UNIT/2));
+        outputs.forEach(output -> lineTo(g, output));
     }
 
-    void connect(Component c) {
-        outputs.add(c);
-    }
-
-    void disconnect() {
-        circuit.getComponents().remove(p);
-        circuit.getComponents().values().forEach(c -> c.outputs.remove(this));
-    }
-
-    void enable() {
-        active = HIGH;
+    void lineTo(Graphics2D g, Component c) {
+        g.drawLine(UNIT*p.getX() + UNIT/2, UNIT*p.getY() + UNIT/2, UNIT*c.getPoint().getX() + UNIT/2, UNIT*c.getPoint().getY() + UNIT/2);
     }
 
     boolean isLogic() {

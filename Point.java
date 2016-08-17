@@ -1,5 +1,5 @@
 public class Point {
-    private int x, y;
+    private final int x, y;
     Point(int x, int y) {
         this.x = x;
         this.y = y;
@@ -12,15 +12,6 @@ public class Point {
     int getY() {
         return y;
     }
-
-    void setX(int x) {
-        this.x = x;
-    }
-
-    void setY(int y) {
-        this.y = y;
-    }
-
     public boolean equals (final Object o) {
         return o instanceof Point && ((Point) o).x == x && ((Point) o).y == y;
     }

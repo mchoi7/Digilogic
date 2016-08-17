@@ -6,13 +6,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class MainFrame extends JFrame implements Runnable, KeyListener, MouseListener {
-    private static final int FPS = 30;
+    private static final int FPS = 60;
     private Circuit circuit = new Circuit();
     private Point pressed;
     private boolean running;
     private int componentType;
     private int tx, ty;
-    final static Paint[] palette = new Paint[7];
+    final static Paint[] palette = new Paint[11];
     final static Stroke[] strokes = new Stroke[3];
 
     private MainFrame() {
@@ -34,6 +34,8 @@ public class MainFrame extends JFrame implements Runnable, KeyListener, MouseLis
         palette[4] = new Color(0x1E0722);
         palette[5] = new Color(0x982646);
         palette[6] = new Color(0xFF4A4A);
+        palette[7] = new Color(0x0F557C);
+        palette[8] = new Color(0x139CE9);
         strokes[0] = new BasicStroke(2);
         strokes[1] = new BasicStroke(4);
         strokes[2] = new BasicStroke(8);
@@ -50,7 +52,7 @@ public class MainFrame extends JFrame implements Runnable, KeyListener, MouseLis
             update();
             render((Graphics2D) getBufferStrategy().getDrawGraphics());
             try {
-                long sleepTime = 1000 / FPS - (System.currentTimeMillis() - startTime);
+                long sleepTime = 1000/FPS - (System.currentTimeMillis() - startTime);
                 if(sleepTime > 0)
                     Thread.sleep(sleepTime);
             } catch(InterruptedException e) {
@@ -87,8 +89,8 @@ public class MainFrame extends JFrame implements Runnable, KeyListener, MouseLis
                 return new Transistor(circuit, p);
             case 'S':
                 return new Source(circuit, p);
-            case 'X':
-                return new Multiplier(circuit, p);
+            case 'V':
+                return new Ground(circuit, p);
         }
     }
 
@@ -130,31 +132,34 @@ public class MainFrame extends JFrame implements Runnable, KeyListener, MouseLis
 
     public void mousePressed(MouseEvent e) {
         pressed = new Point((e.getX() - tx) / Component.UNIT, (e.getY() - ty) / Component.UNIT);
-        if (e.isControlDown()) {
-            if(circuit.get(pressed) != null)
-            circuit.get(pressed).enable();
-        }
-        else if (!e.isShiftDown())
-            if (circuit.get(pressed) == null)
+        if(SwingUtilities.isRightMouseButton(e)) {
+            if (circuit.get(pressed) != null)
+                circuit.remove(circuit.get(pressed));
+        } else if(e.isShiftDown()) {
+            if(circuit.get(pressed) == null)
+                new Transistor(circuit, pressed);
+        } else {
+            if(circuit.get(pressed) == null)
                 buildComponent(pressed);
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
         Point released = new Point((e.getX() - tx) / Component.UNIT, (e.getY() - ty) / Component.UNIT);
-        if(!e.isShiftDown()) {
-            if(!e.isControlDown()) {
-                if (pressed.equals(released)) {
-                    circuit.remove(circuit.get(released));
-                    buildComponent(released);
-                } else {
-                    if (circuit.get(released) == null)
-                        buildComponent(released);
-                    circuit.get(pressed).connect(circuit.get(released));
-                }
-            }
+        if(SwingUtilities.isRightMouseButton(e)) {
+            if(circuit.get(released) != null)
+                circuit.remove(circuit.get(released));
+        } else if(e.isShiftDown()) {
+            if(circuit.get(released) == null)
+                new Component(circuit, released);
+            circuit.get(pressed).connect(circuit.get(released));
         } else {
-            if(circuit.get(pressed) != null)
-                circuit.remove(circuit.get(pressed));
+            if(circuit.get(released) == null)
+                buildComponent(released);
+            if(!pressed.equals(released))
+                circuit.get(pressed).connect(circuit.get(released));
+            else
+                circuit.get(released).enable();
         }
     }
 

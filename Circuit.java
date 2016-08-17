@@ -14,21 +14,20 @@ class Circuit {
         try {
             components.values().forEach(component -> component.renderIn(g));
             components.values().forEach(component -> component.renderOut(g));
-        } catch(ConcurrentModificationException e) {}
-    }
-
-    void modify() {
-
+            components.values().forEach(component -> component.renderWires(g));
+        } catch(ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
     }
 
     void remove(Component c) {
-        c.disconnect();
+        components.values().forEach(component -> component.disconnect(c));
+        components.remove(c.getPoint());
     }
 
     Component get(Point p) {
         return components.get(p);
     }
-
 
     Map<Point, Component> getComponents() {
         return components;
