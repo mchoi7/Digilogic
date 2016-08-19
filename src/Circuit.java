@@ -16,16 +16,25 @@ public class Circuit {
     }
 
     void render(Graphics2D g) {
-        wires.values().forEach(wire -> wire.renderIn(g));
-        wires.values().forEach(wire -> wire.renderOut(g));
-        wires.values().forEach(wire -> wire.renderWires(g));
+        for(Wire w : wires.values()) {
+            w.renderIn(g);
+            w.renderOut(g);
+            w.renderConnections(g);
+        }
+        try {
+            wires.values().forEach(wire -> wire.renderIn(g));
+            wires.values().forEach(wire -> wire.renderOut(g));
+            wires.values().forEach(wire -> wire.renderConnections(g));
+        } catch (ConcurrentModificationException e) {
+            e.printStackTrace();
+        }
     }
-    public void remove(Wire c) {
+    void remove(Wire c) {
         wires.values().forEach(wire -> wire.disconnect(c));
         wires.remove(c.getPoint());
     }
 
-    public Wire get(Pin p) {
+    Wire get(Pin p) {
         return wires.get(p);
     }
 

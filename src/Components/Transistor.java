@@ -6,20 +6,20 @@ import src.Constants;
 import java.awt.*;
 
 public class Transistor extends Wire {
-    private Wire trigger, redirect;
+    private Wire base, collector;
 
     public Transistor(Circuit circuit, Pin p) {
         super(circuit, p);
-        trigger = this;
-        redirect = this;
+        base = this;
+        collector = this;
     }
 
     public void update() {
         if(logic == HIGH) {
-            if(trigger.isLogic() == HIGH)
-                outputs.forEach(Wire::enable);
-            else if(!redirect.equals(this))
-                redirect.enable();
+            if(base.isLogic() == HIGH)
+                emitters.forEach(Wire::enable);
+            else if(!collector.equals(this))
+                collector.enable();
         }
         logic = LOW;
         if(active == HIGH) {
@@ -29,34 +29,34 @@ public class Transistor extends Wire {
     }
 
     public void connect(Wire c) {
-        if(!outputs.isEmpty() && redirect.equals(this))
-            redirect = c;
+        if(!emitters.isEmpty() && collector.equals(this))
+            collector = c;
         else super.connect(c);
     }
 
     public void pair(Wire c) {
-        trigger = c;
+        base = c;
     }
 
     public void disconnect(Wire c) {
         super.disconnect(c);
-        if(c.equals(trigger))
-            trigger = this;
-        if(c.equals(redirect))
-            redirect = this;
+        if(c.equals(base))
+            base = this;
+        if(c.equals(collector))
+            collector = this;
     }
 
     public void renderOut(Graphics2D g) {
         super.renderOut(g);
-        g.setPaint(trigger.isLogic() == HIGH ? Constants.palette[8] : Constants.palette[7]);
-        g.drawRect(UNIT*p.getX() + UNIT/4, UNIT*p.getY() + UNIT/4, UNIT/2, UNIT/2);
+        g.setPaint(base.isLogic() == HIGH ? Constants.palette[8] : Constants.palette[7]);
+        g.drawOval(UNIT*p.getX() + UNIT/4, UNIT*p.getY() + UNIT/4, UNIT/2, UNIT/2);
     }
-    public void renderWires(Graphics2D g) {
-        g.setPaint(trigger.isLogic() == HIGH ? Constants.palette[8] : Constants.palette[7]);
-        outputs.forEach(output -> lineTo(g, output));
-        g.setPaint(trigger.isLogic() == HIGH ? Constants.palette[9] : Constants.palette[10]);
-        lineTo(g, trigger);
-        g.setPaint(trigger.isLogic() == HIGH ? Constants.palette[7] : Constants.palette[8]);
-        lineTo(g, redirect);
+    public void renderConnections(Graphics2D g) {
+        g.setPaint(base.isLogic() == HIGH ? Constants.palette[8] : Constants.palette[7]);
+        emitters.forEach(output -> lineTo(g, output));
+        g.setPaint(base.isLogic() == HIGH ? Constants.palette[9] : Constants.palette[10]);
+        lineTo(g, base);
+        g.setPaint(base.isLogic() == HIGH ? Constants.palette[7] : Constants.palette[8]);
+        lineTo(g, collector);
     }
 }

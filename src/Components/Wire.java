@@ -4,14 +4,13 @@ import src.Circuit;
 import src.Constants;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
 public class Wire {
-    public static int UNIT = 40;
+    public static int UNIT = 50;
     static final boolean LOW = false, HIGH = true;
-    List<Wire> outputs = new ArrayList<>();
+    List<Wire> emitters = new ArrayList<>();
     Pin p;
     boolean logic, active;
 
@@ -21,7 +20,7 @@ public class Wire {
     }
 
     public void connect(Wire c) {
-        outputs.add(c);
+        emitters.add(c);
     }
 
     public void pair(Wire c) {
@@ -29,7 +28,7 @@ public class Wire {
     }
 
     public void disconnect(Wire c) {
-        outputs.remove(c);
+        emitters.remove(c);
     }
 
     public void enable() {
@@ -38,7 +37,7 @@ public class Wire {
 
     public void update() {
         if(logic == HIGH)
-            outputs.forEach(Wire::enable);
+            emitters.forEach(Wire::enable);
         logic = LOW;
         if(active == HIGH) {
             logic = HIGH;
@@ -48,15 +47,15 @@ public class Wire {
 
     public void renderIn(Graphics2D g) {
         g.setPaint(logic == HIGH ? Constants.palette[2] : Constants.palette[3]);
-        g.fillRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT);
+        g.fillRoundRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT, UNIT/2, UNIT/2);
     }
     public void renderOut(Graphics2D g) {
         g.setPaint(Constants.palette[4]);
-        g.drawRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT);
+        g.drawRoundRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT, UNIT/2, UNIT/2);
     }
-    public void renderWires(Graphics2D g) {
+    public void renderConnections(Graphics2D g) {
         g.setPaint(logic == HIGH ? Constants.palette[6] : Constants.palette[5]);
-        outputs.forEach(output -> lineTo(g, output));
+        emitters.forEach(output -> lineTo(g, output));
     }
     void lineTo(Graphics2D g, Wire c) {
         g.drawLine(UNIT*p.getX() + UNIT/2, UNIT*p.getY() + UNIT/2, UNIT*c.getPoint().getX() + UNIT/2, UNIT*c.getPoint().getY() + UNIT/2);

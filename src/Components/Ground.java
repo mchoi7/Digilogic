@@ -2,7 +2,6 @@ package src.Components;
 
 import src.Circuit;
 import src.Constants;
-import src.MainFrame;
 
 import java.awt.*;
 
@@ -25,8 +24,8 @@ public class Ground extends Wire {
         g.drawLine(UNIT*p.getX() + UNIT/4, UNIT*p.getY() + UNIT/4, UNIT*p.getX() + 3*UNIT/4, UNIT*p.getY() + UNIT/4);
         g.drawLine(UNIT*p.getX() + UNIT/3, UNIT*p.getY() + 3*UNIT/4, UNIT*p.getX() + 2*UNIT/3, UNIT*p.getY() + 3*UNIT/4);
     }
-    public void renderWires(Graphics2D g) {
+    public void renderConnections(Graphics2D g) {
         g.setPaint(Constants.palette[5]);
-        outputs.forEach(output -> lineTo(g, output));
+        emitters.forEach(output -> lineTo(g, output));
     }
 }

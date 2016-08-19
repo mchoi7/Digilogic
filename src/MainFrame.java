@@ -1,8 +1,6 @@
 package src;
 
 import src.Components.*;
-import src.Inputs.Keyboard;
-import src.Inputs.Mouse;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,8 +10,7 @@ public class MainFrame extends JFrame {
     /*----------------*/
     /*=====Fields=====*/
 
-    private final static long FPS = 60, MSPF = 1000/FPS;
-
+    private final static long FPS = 60, MSPF = 1000/FPS; /* MSPF -> Milli-Seconds Per Frame */
     private Circuit circuit = new Circuit();
     private boolean running;
     private int xCamera, yCamera;
@@ -22,6 +19,7 @@ public class MainFrame extends JFrame {
     /*==Constructor===*/
 
     private MainFrame() {
+        setTitle("Digilogic");
         setSize(1200, 1000);
         setLocationRelativeTo(null); /* Center the window */
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -34,8 +32,10 @@ public class MainFrame extends JFrame {
 
     private void init() {
         createBufferStrategy(3); /* Triple check that rendering is loadable */
-        addMouseListener(new Mouse(this));
-        addKeyListener(new Keyboard());
+        Input input = new Input(this);
+        addMouseListener(input);
+        addMouseMotionListener(input);
+        addKeyListener(input);
         running = true;
         new Thread(() -> loop(this::update)).start(); /* Thread's run() is loop(update()) */
         new Thread(() -> loop(this::render)).start(); /* Thread's run() is loop(render()) */
@@ -63,8 +63,8 @@ public class MainFrame extends JFrame {
     private void render() {
         Graphics2D g = (Graphics2D) getBufferStrategy().getDrawGraphics();
         g.setPaint(Constants.palette[1]);
-        g.translate(xCamera, yCamera);
         g.fillRect(0, 0, getWidth(), getHeight());
+        g.translate(xCamera, yCamera);
         g.setStroke(Constants.stroke);
         g.setPaint(Constants.palette[0]);
         for(int j = 0; j < 50; j++)
@@ -78,13 +78,13 @@ public class MainFrame extends JFrame {
     /*----------------*/
     /*===Accessors====*/
 
-    public Circuit getCircuit() {
+    Circuit getCircuit() {
         return circuit;
     }
-    public int getxCamera() {
+    int getxCamera() {
         return xCamera;
     }
-    public int getyCamera() {
+    int getyCamera() {
         return yCamera;
     }
 
