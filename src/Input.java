@@ -3,7 +3,6 @@ package src;
 import src.Components.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -15,9 +14,21 @@ class Input extends MouseAdapter implements KeyListener {
     private Pin pressed;
     private char key;
     private int xMouse, yMouse;
+    private boolean direction[] = new boolean[256];
 
     Input(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
+    }
+
+    void update() {
+        if(direction['I'])
+            mainFrame.setyCamera(mainFrame.getyCamera() + Wire.UNIT / 2);
+        if(direction['J'])
+            mainFrame.setxCamera(mainFrame.getxCamera() + Wire.UNIT / 2);
+        if(direction['K'])
+            mainFrame.setyCamera(mainFrame.getyCamera() - Wire.UNIT / 2);
+        if(direction['L'])
+            mainFrame.setxCamera(mainFrame.getxCamera() - Wire.UNIT / 2);
     }
 
     public void mousePressed(MouseEvent e) {
@@ -82,41 +93,44 @@ class Input extends MouseAdapter implements KeyListener {
         }
     }
 
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e) {
+        key = e.getKeyChar();
+        if(key >= 'a' && key <= 'z')
+            key += 'A' - 'a';
+        if(key == 'I' || key == 'J' || key == 'L' || key == 'K')
+            direction[key] = false;
+    }
 
-    public void keyPressed(KeyEvent e) {}
+    public void keyPressed(KeyEvent e) {
+        key = e.getKeyChar();
+        if(key >= 'a' && key <= 'z')
+            key += 'A' - 'a';
+        if(key == 'I' || key == 'J' || key == 'L' || key == 'K')
+            direction[key] = true;
+    }
 
     public void keyTyped(KeyEvent e) {
         key = e.getKeyChar();
-        if(key == '\u001B')
+        if(e.getKeyChar() == '\u001B') {
+            mainFrame.getCircuit().saveCircuit();
             System.exit(1);
-        else if(key >= 'a' && key <= 'z')
+        } else if(key >= 'a' && key <= 'z')
             key += 'A' - 'a';
-        switch(key) {
-            case '+':
-            case '=':
-                Wire.UNIT += 1;
-                break;
-            case '-':
-            case '_':
-                Wire.UNIT -= 1;
-                break;
-            case 'I':
-                mainFrame.setyCamera(mainFrame.getyCamera() + Wire.UNIT/2);
-                break;
-            case 'J':
-                mainFrame.setxCamera(mainFrame.getxCamera() + Wire.UNIT/2);
-                break;
-            case 'K':
-                mainFrame.setyCamera(mainFrame.getyCamera() - Wire.UNIT/2);
-                break;
-            case 'L':
-                mainFrame.setxCamera(mainFrame.getxCamera() - Wire.UNIT/2);
-                break;
-            default:
-                if (!e.isAltDown())
-                    buildWire(new Pin((xMouse - mainFrame.getxCamera()) / Wire.UNIT, (yMouse - mainFrame.getyCamera()) / Wire.UNIT));
-                break;
-        }
+
+        if(!(key == 'I' || key == 'J' || key == 'L' || key == 'K'))
+            switch(key) {
+                case '+':
+                case '=':
+                    Wire.UNIT += 1;
+                    break;
+                case '-':
+                case '_':
+                    Wire.UNIT -= 1;
+                    break;
+                default:
+                    if (!e.isAltDown())
+                        buildWire(new Pin((xMouse - mainFrame.getxCamera()) / Wire.UNIT, (yMouse - mainFrame.getyCamera()) / Wire.UNIT));
+                    break;
+            }
     }
 }

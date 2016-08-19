@@ -4,10 +4,11 @@ import src.Circuit;
 import src.Constants;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-public class Wire {
+public class Wire implements Serializable {
     public static int UNIT = 50;
     static final boolean LOW = false, HIGH = true;
     List<Wire> emitters = new ArrayList<>();
@@ -19,22 +20,17 @@ public class Wire {
         this.p = p;
     }
 
-    public void connect(Wire c) {
-        emitters.add(c);
+    public void connect(Wire w) {
+        this.emitters.add(w);
     }
-
-    public void pair(Wire c) {
-
-    }
-
-    public void disconnect(Wire c) {
-        emitters.remove(c);
+    public void pair(Wire w) {}
+    public void disconnect(Wire w) {
+        emitters.remove(w);
     }
 
     public void enable() {
         active = HIGH;
     }
-
     public void update() {
         if(logic == HIGH)
             emitters.forEach(Wire::enable);
@@ -47,11 +43,11 @@ public class Wire {
 
     public void renderIn(Graphics2D g) {
         g.setPaint(logic == HIGH ? Constants.palette[2] : Constants.palette[3]);
-        g.fillRoundRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT, UNIT/2, UNIT/2);
+        g.fillRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT);
     }
     public void renderOut(Graphics2D g) {
         g.setPaint(Constants.palette[4]);
-        g.drawRoundRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT, UNIT/2, UNIT/2);
+        g.drawRect(UNIT*p.getX(), UNIT*p.getY(), UNIT, UNIT);
     }
     public void renderConnections(Graphics2D g) {
         g.setPaint(logic == HIGH ? Constants.palette[6] : Constants.palette[5]);

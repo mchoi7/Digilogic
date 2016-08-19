@@ -1,6 +1,8 @@
 package src.Components;
 
-public class Pin {
+import java.io.Serializable;
+
+public class Pin implements Serializable{
     private final int x, y;
     public Pin(int x, int y) {
         this.x = x;

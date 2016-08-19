@@ -4,6 +4,7 @@ import src.Components.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ConcurrentModificationException;
 
 public class MainFrame extends JFrame {
 
@@ -12,6 +13,7 @@ public class MainFrame extends JFrame {
 
     private final static long FPS = 60, MSPF = 1000/FPS; /* MSPF -> Milli-Seconds Per Frame */
     private Circuit circuit = new Circuit();
+    private Input input;
     private boolean running;
     private int xCamera, yCamera;
 
@@ -20,7 +22,7 @@ public class MainFrame extends JFrame {
 
     private MainFrame() {
         setTitle("Digilogic");
-        setSize(1200, 1000);
+        setSize(800, 600);
         setLocationRelativeTo(null); /* Center the window */
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
@@ -32,10 +34,11 @@ public class MainFrame extends JFrame {
 
     private void init() {
         createBufferStrategy(3); /* Triple check that rendering is loadable */
-        Input input = new Input(this);
+        input = new Input(this);
         addMouseListener(input);
         addMouseMotionListener(input);
         addKeyListener(input);
+        circuit.loadCircuit();
         running = true;
         new Thread(() -> loop(this::update)).start(); /* Thread's run() is loop(update()) */
         new Thread(() -> loop(this::render)).start(); /* Thread's run() is loop(render()) */
@@ -45,7 +48,11 @@ public class MainFrame extends JFrame {
         long startTime;
         while(running) {
             startTime = System.currentTimeMillis();
+            try {
             runnable.run();
+            } catch (ConcurrentModificationException e) {
+                e.printStackTrace();
+            }
             try {
                 long sleepTime = MSPF - System.currentTimeMillis() + startTime;
                 if(sleepTime > 0)
@@ -58,6 +65,7 @@ public class MainFrame extends JFrame {
 
     private void update() {
         circuit.update();
+        input.update();
     }
 
     private void render() {
@@ -91,10 +99,10 @@ public class MainFrame extends JFrame {
     /*----------------*/
     /*====Mutators====*/
 
-    public void setxCamera(int xCamera) {
+    void setxCamera(int xCamera) {
         this.xCamera = xCamera;
     }
-    public void setyCamera(int yCamera) {
+    void setyCamera(int yCamera) {
         this.yCamera = yCamera;
     }
 
