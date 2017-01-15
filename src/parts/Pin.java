@@ -1,9 +1,10 @@
-package src.Components;
+package src.parts;
 
 import java.io.Serializable;
 
-public class Pin implements Serializable{
+public class Pin implements Serializable {
     private final int x, y;
+
     public Pin(int x, int y) {
         this.x = x;
         this.y = y;
@@ -16,7 +17,8 @@ public class Pin implements Serializable{
     public int getY() {
         return y;
     }
-    public boolean equals (final Object o) {
+
+    public boolean equals(final Object o) {
         return o instanceof Pin && ((Pin) o).x == x && ((Pin) o).y == y;
     }
 
