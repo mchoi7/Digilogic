@@ -161,7 +161,7 @@ public class MainFrame extends JFrame implements KeyListener, MouseListener, Mou
             switch (e.getExtendedKeyCode()) {
                 case 'S':
                     try {
-                        FileOutputStream fileOut = new FileOutputStream("circuit.data");
+                        FileOutputStream fileOut = new FileOutputStream("src/resources/circuit.data");
                         ObjectOutputStream out = new ObjectOutputStream(fileOut);
                         out.writeObject(circuit);
                         out.close();
@@ -173,7 +173,7 @@ public class MainFrame extends JFrame implements KeyListener, MouseListener, Mou
                     break;
                 case 'O':
                     try {
-                        FileInputStream fileIn = new FileInputStream("circuit.data");
+                        FileInputStream fileIn = new FileInputStream("src/resources/circuit.data");
                         ObjectInputStream in = new ObjectInputStream(fileIn);
                         circuit = (Circuit) in.readObject();
                         in.close();
